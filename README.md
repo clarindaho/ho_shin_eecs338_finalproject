@@ -1,5 +1,5 @@
 ## EECS 338 Final Project
-Clarinda Ho (cqh), Jason Shin (jjs228)
+Clarinda Ho (cqh), Jason Shin (jjs270)
 
 ### Concept
 Create a 2-player battleship that uses sockets (server and client).
