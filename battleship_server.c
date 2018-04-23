@@ -154,6 +154,8 @@ void configureGame(){
 	char temp[100];
 	char exit[100] = "exit";
 	
+	int n;
+	
 	// configure board size
 	int isBoardSizeSet = 1;
 	while (isBoardSizeSet != 0){
@@ -175,6 +177,11 @@ void configureGame(){
 	
 	bzero(buffer, sizeof(buffer));
 	sprintf(buffer, "%d", mapExtent);
+	
+	n = write(newsockfd, buffer, sizeof(buffer));
+	if (n < 0) 
+		error("ERROR: could not write to socket\n");
+	
 	usleep(200);
 	
 	// configure aircraft carrier
@@ -196,6 +203,11 @@ void configureGame(){
 	
 	bzero(buffer, sizeof(buffer));
 	sprintf(buffer, "%d", numAircraftCarrier);
+	
+	n = write(newsockfd, buffer, sizeof(buffer));
+	if (n < 0) 
+		error("ERROR: could not write to socket\n");
+	
 	usleep(200);
 	
 	// configure battleship
@@ -217,6 +229,11 @@ void configureGame(){
 	
 	bzero(buffer, sizeof(buffer));
 	sprintf(buffer, "%d", numBattleship);
+	
+	n = write(newsockfd, buffer, sizeof(buffer));
+	if (n < 0) 
+		error("ERROR: could not write to socket\n");
+	
 	usleep(200);
 	
 	// configure submarine
@@ -238,6 +255,11 @@ void configureGame(){
 	
 	bzero(buffer, sizeof(buffer));
 	sprintf(buffer, "%d", numSubmarine);
+	
+	n = write(newsockfd, buffer, sizeof(buffer));
+	if (n < 0) 
+		error("ERROR: could not write to socket\n");
+	
 	usleep(200);
 	
 	// configure cruiser
@@ -259,6 +281,11 @@ void configureGame(){
 	
 	bzero(buffer, sizeof(buffer));
 	sprintf(buffer, "%d", numCruiser);
+	
+	n = write(newsockfd, buffer, sizeof(buffer));
+	if (n < 0) 
+		error("ERROR: could not write to socket\n");
+	
 	usleep(200);
 	
 	// configure destroyer
@@ -280,6 +307,11 @@ void configureGame(){
 	
 	bzero(buffer, sizeof(buffer));
 	sprintf(buffer, "%d", numDestroyer);
+	
+	n = write(newsockfd, buffer, sizeof(buffer));
+	if (n < 0) 
+		error("ERROR: could not write to socket\n");
+	
 	usleep(200);
 }
 
