@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -19,35 +20,35 @@
 // structs
 //
 
-struct aircraft_carrier {
-	int health = 5;
+typedef struct {
+	int health;
 	int x[5];
 	int y[5];
-}
+} aircraft_carrier;
 
-struct battleship {
-	int health = 4;
+typedef struct {
+	int health;
 	int x[4];
 	int y[4];
-}
+} battleship;
 
-struct submarine {
-	int health = 3;
+typedef struct {
+	int health;
 	int x[3];
 	int y[3];
-}
+} submarine;
 
-struct cruiser {
-	int health = 3;
+typedef struct {
+	int health;
 	int x[3];
 	int y[3];
-}
+} cruiser;
 
-struct destroyer {
-	int health = 2;
+typedef struct {
+	int health;
 	int x[2];
 	int y[2];
-}
+} destroyer;
 
 //
 // global variables and constants
@@ -58,27 +59,33 @@ int newsockfd;		// new socket connection with client
 char buffer[256];	// buffer
 
 int map[20][20];
-int *xExtent;
-int *yExtent;
+int mapExtent;
 
-aircraft_carrier listAircraftCarrier[3];
-int *numAircraftCarrier;
+aircraft_carrier listAircraftCarrier[2];
+int numAircraftCarrier;
 
-battleship listBattleship[4];
-int *numBattleship;
-int *numSubmarine;
-int *numCruiser;
-int *numDestroyer;
+battleship listBattleship[3];
+int numBattleship;
+
+submarine listSubmarine[3];
+int numSubmarine;
+
+cruiser listCruiser[3];
+int numCruiser;
+
+destroyer listDestroyer[4];
+int numDestroyer;
 
 //
 // method signatures
 //
 
 void createServerSocket(char *portNum);
-void connect();
+void acceptConnection();
 void closeSockets();
 
 void configureGame();
+void placeShips();
 
 //
 // method definitions
@@ -93,8 +100,8 @@ int main(int argc, char *argv[]) {
 	}
 	
 	createServerSocket(argv[1]);
-	connect();
-	
+	acceptConnection();
+	configureGame();
 	
 	closeSockets();
 	
@@ -123,7 +130,7 @@ void createServerSocket(char *portNum){
 }
 
 // listen and accept incoming connection requests
-void connect(){
+void acceptConnection(){
 	listen(sockfd, 5);
 	
 	struct sockaddr_in cli_addr;
@@ -144,26 +151,138 @@ void closeSockets(){
 
 // configure game
 void configureGame(){
-	int isBoardSizeSet = 1;
+	char temp[100];
+	char exit[100] = "exit";
 	
+	// configure board size
+	int isBoardSizeSet = 1;
 	while (isBoardSizeSet != 0){
-		printf("How large do you want the board to be? (Min: 10x5, Max: 20x20) \nFormat: xExtent x yExtent \n");
-		scanf("%d %d", &xExtent, &yExtent);
+		printf("How large do you want the board to be? (Min: 7x7, Max: 20x20) \nFormat: number \n");
+		gets(temp);
 		
-		if (&xExtent < 10)
-			fprintf(stederr, "ERROR: board xExtent is too small\n");
-		else if (&xExtent > 20)
-			fprintf(stderr, "ERROR: board xExtent is too large\n");
-		else if (&yExtent < 5)
-			fprintf(stderr, "ERROR: board yExtent is too small\n");
-		else if (&yExtent > 20)
-			fprintf(stderr, "ERROR: board yExtent is too large\n");
+		if (strcmp(temp, exit) == 0)
+			return 0;
+		else
+			mapExtent = atoi(temp);
+		
+		if (mapExtent < 7)
+			fprintf(stderr, "ERROR: board extent is too small\n");
+		else if (mapExtent > 20)
+			fprintf(stderr, "ERROR: board extent is too large\n");
 		else
 			isBoardSizeSet = 0;
 	}
 	
+	bzero(buffer, sizeof(buffer));
+	sprintf(buffer, "%d", mapExtent);
+	usleep(200);
+	
+	// configure aircraft carrier
 	int isAircraftCarrierSet = 1;
 	while(isAircraftCarrierSet != 0){
-		printf("How many aircraft carriers do you want? (Max: 3)");
+		printf("How many aircraft carriers do you want? (Max: 2) \n");
+		gets(temp);
+		
+		if (strcmp(temp, exit) == 0)
+			return 0;
+		else
+			numAircraftCarrier = atoi(temp);
+		
+		if (numAircraftCarrier > 2 || numAircraftCarrier < 0)
+			fprintf(stderr, "ERROR: not a valid option\n");
+		else
+			isAircraftCarrierSet = 0;
 	}
+	
+	bzero(buffer, sizeof(buffer));
+	sprintf(buffer, "%d", numAircraftCarrier);
+	usleep(200);
+	
+	// configure battleship
+	int isBattleshipSet = 1;
+	while(isBattleshipSet != 0){
+		printf("How many battleships do you want? (Max: 3) \n");
+		gets(temp);
+		
+		if (strcmp(temp, exit) == 0)
+			return 0;
+		else
+			numBattleship = atoi(temp);
+		
+		if (numBattleship > 3 || numBattleship < 0)
+			fprintf(stderr, "ERROR: not a valid option\n");
+		else
+			isBattleshipSet = 0;
+	}
+	
+	bzero(buffer, sizeof(buffer));
+	sprintf(buffer, "%d", numBattleship);
+	usleep(200);
+	
+	// configure submarine
+	int isSubmarineSet = 1;
+	while(isSubmarineSet != 0){
+		printf("How many submarines do you want? (Max: 3) \n");
+		gets(temp);
+		
+		if (strcmp(temp, exit) == 0)
+			return 0;
+		else
+			numSubmarine = atoi(temp);
+		
+		if (numSubmarine > 3 || numSubmarine < 0)
+			fprintf(stderr, "ERROR: not a valid option\n");
+		else
+			isSubmarineSet = 0;
+	}
+	
+	bzero(buffer, sizeof(buffer));
+	sprintf(buffer, "%d", numSubmarine);
+	usleep(200);
+	
+	// configure cruiser
+	int isCruiserSet = 1;
+	while(isCruiserSet != 0){
+		printf("How many cruisers do you want? (Max: 3) \n");
+		gets(temp);
+		
+		if (strcmp(temp, exit) == 0)
+			return 0;
+		else
+			numCruiser = atoi(temp);
+		
+		if (numCruiser > 3 || numCruiser < 0)
+			fprintf(stderr, "ERROR: not a valid option\n");
+		else
+			isCruiserSet = 0;
+	}
+	
+	bzero(buffer, sizeof(buffer));
+	sprintf(buffer, "%d", numCruiser);
+	usleep(200);
+	
+	// configure destroyer
+	int isDestroyerSet = 1;
+	while(isDestroyerSet != 0){
+		printf("How many destroyers do you want? (Max: 4) \n");
+		gets(temp);
+		
+		if (strcmp(temp, exit) == 0)
+			return 0;
+		else
+			numDestroyer = atoi(temp);
+		
+		if (numDestroyer > 4 || numDestroyer < 0)
+			fprintf(stderr, "ERROR: not a valid option\n");
+		else
+			isDestroyerSet = 0;
+	}
+	
+	bzero(buffer, sizeof(buffer));
+	sprintf(buffer, "%d", numDestroyer);
+	usleep(200);
 }
+
+void placeShips(){
+}
+

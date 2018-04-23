@@ -29,7 +29,7 @@ Create a 2-player battleship that uses sockets (server and client).
 
     - Populate the board
 		- Each player will choose where they will place the ship and the direction to orient the ship
-		- Format: (Coordinate, Direction) EX) 4A E
+		- Format: (Coordinate, Direction) i.e. 4 A EAST
   
 ### Running
     - Reading user input for two players
