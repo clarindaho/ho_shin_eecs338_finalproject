@@ -40,7 +40,7 @@ Create a 2-player battleship that uses sockets (server and client).
 
     - On Hit:
 		- Check to see if ship is sunk
-        - Keep track of ships in a struct, decrement a value representing how much health is left
+		- Keep track of ships in a struct, decrement a value representing how much health is left
     
     - Check to see if total health is 0, if it is 0, end the game
     - If not, clear the terminal, switch turns    
