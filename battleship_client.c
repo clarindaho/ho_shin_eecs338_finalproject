@@ -26,6 +26,56 @@ typedef struct {
 	int y[5];
 } ship;
 
+void INIT_AIRCRAFT_CARRIER(ship *aircraftCarrier){
+	aircraftCarrier->health = 5;
+
+	int i;
+	for (i = 0; i < 5; i++) {
+		aircraftCarrier->x[i] = -1;
+		aircraftCarrier->y[i] = -1;
+	}
+}
+
+void INIT_BATTLESHIP(ship *battleship){
+	battleship->health = 4;
+	
+	int i;
+	for (i = 0; i < 5; i++) {
+		battleship->x[i] = -1;
+		battleship->y[i] = -1;
+	}
+}
+
+void INIT_SUBMARINE(ship *submarine){
+	submarine->health = 3;
+	
+	int i;
+	for (i = 0; i < 5; i++) {
+		submarine->x[i] = -1;
+		submarine->y[i] = -1;
+	}
+}
+
+void INIT_CRUISER(ship *cruiser){
+	cruiser->health = 3;
+
+	int i;
+	for (i = 0; i < 5; i++) {
+		cruiser->x[i] = -1;
+		cruiser->y[i] = -1;
+	}
+}
+
+void INIT_DESTROYER(ship *destroyer){
+	destroyer->health = 2;
+	
+	int i;
+	for (i = 0; i < 5; i++) {
+		destroyer->x[i] = -1;
+		destroyer->y[i] = -1;
+	}
+}
+
 //
 // global variables and constants
 //
@@ -34,48 +84,66 @@ int sockfd;			// client socket
 char buffer[256];	// buffer
 
 int map[20][20];
-int mapExtent = 0;
+int mapExtent;
 
-int numAircraftCarrier = 0;
-ship listAircraftCarrier[2];
-#define INIT_AIRCRAFT_CARRIER(X) ship X = {.health = 5, .x = {-1,-1,-1,-1,-1} .y = {-1,-1,-1,-1,-1}}
+ship *listAircraftCarrier[2];
+int numAircraftCarrier;
 
-int numBattleship = 0;
-ship listBattleship[3];
-#define INIT_BATTLESHIP(X) ship X = {.health = 4, .x = {-1,-1,-1,-1,-1} .y = {-1,-1,-1,-1,-1}}
+ship *listBattleship[3];
+int numBattleship;
 
-int numSubmarine = 0;
-ship listSubmarine[3];
-#define INIT_SUBMARINE(X) ship X = {.health = 3, .x = {-1,-1,-1,-1,-1} .y = {-1,-1,-1,-1,-1}}
+ship *listSubmarine[3];
+int numSubmarine;
 
-int numCruiser = 0;
-ship listCruiser[3];
-#define INIT_CRUISER(X) ship X = {.health = 3, .x = {-1,-1,-1,-1,-1} .y = {-1,-1,-1,-1,-1}}
+ship *listCruiser[3];
+int numCruiser;
 
-int numDestroyer = 0;
-ship listDestroyer[4];
-#define INIT_DESTROYER(X) ship X = {.health = 2, .x = {-1,-1,-1,-1,-1} .y = {-1,-1,-1,-1,-1}}
+ship *listDestroyer[4];
+int numDestroyer;
 
 //
 // method signatures
 //
 
+void connectToServer(char *IPAddress, char* portNum);
+void closeSockets();
+
+void setupFromServer();
+int checkValidPos(int startNumPos, int startCharPos, int length, char *direction);
+void setShipPos(ship *currentShip, int startNumPos, int startCharPos, char *direction);
+void chooseShipPositions(int type);
+
 //
 // method definitions
 //
 
-// Helper function to conveniently print to stderr AND exit (terminate)
-void error(const char *msg) {
-  perror(msg);
-  exit(0);
+// main method
+int main(int argc, char *argv[]) {
+	// Check for proper number of commandline arguments
+	// Expect program name in argv[0], IP address in argv[1], and port # in argv[2]
+	if (argc < 3) {
+		fprintf(stderr, "Program Usage: %s hostname port\n", argv[0]);
+		return 1;
+	}
+	
+	connectToServer(argv[1], argv[2]);
+	setupFromServer();
+	
+	int i;
+	for (i = 0; i < 5; i++)
+		chooseShipPositions(i);
+	
+	closeSockets();
+
+	return 0;
 }
 
-//create and set up client socket
+// create and set up client socket
 void connectToServer(char *IPAddress, char* portNum) {
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd < 0) {
 		fprintf(stderr, "ERROR: could not open client socket to the server\n");
-		exit(0);
+		exit(2);
 	}
 
 	struct hostent *server;
@@ -88,35 +156,51 @@ void connectToServer(char *IPAddress, char* portNum) {
   	bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
   	serv_addr.sin_port = htons(portno);
 
-  	if (connect(sockfd,(struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) 
-    	error("ERROR could not bind client socket");
+  	if (connect(sockfd,(struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+    		fprintf(stderr, "ERROR: could not bind client socket\n");
+		exit(2);
+	}
 }
 
-// Close all sockets
-void closeSocket() {
+// close all sockets
+void closeSockets() {
 	close(sockfd);
 }
 
-// Setting up board from information from server
+// set up board based on information from server
 void setupFromServer() {
-	int setupState;
-	for (setupState = 0; setupState < 6; setupState++) {
+	int setupState = 0;
+	while (setupState < 6){
 		bzero(buffer, sizeof(buffer));
 		int n = read(sockfd, buffer, sizeof(buffer));
-		if (n < 0)
-			error("ERROR reading from socket");
-		else if (setupState == 0)
-			mapExtent = atoi(buffer);
-		else if (setupState == 1)
-			numAircraftCarrier = atoi(buffer);
-		else if (setupState == 2)
-			numBattleship = atoi(buffer);
-		else if (setupState == 3)
-			numSubmarine = atoi(buffer);
-		else if (setupState == 4)
-			numCruiser = atoi(buffer);
-		else if (setupState == 5)
-			numDestroyer = atoi(buffer);
+		if (n < 0) {
+			fprintf(stderr, "ERROR: could not read from socket\n");
+			exit(2);
+		}
+		else {
+			switch(setupState){
+				case 0:
+					mapExtent = atoi(buffer);
+					break;
+				case 1:
+					numAircraftCarrier = atoi(buffer);
+					break;
+				case 2:
+					numBattleship = atoi(buffer);
+					break;
+				case 3:
+					numSubmarine = atoi(buffer);
+					break;
+				case 4:
+					numCruiser = atoi(buffer);
+					break;
+				case 5:
+					numDestroyer = atoi(buffer);
+					break;
+			}
+			
+			setupState++;
+		}
 	}
 }
 
@@ -148,13 +232,12 @@ int checkValidPos(int startNumPos, int startCharPos, int length, char *direction
 	return 1;
 }
 
-void setShipPos(ship *ship, int startNumPos, int startCharPos, char *direction) {
-	int length = (&ship).health;
-
+void setShipPos(ship *currentShip, int startNumPos, int startCharPos, char *direction) {
 	int numPosOffset = 0;
 	int charPosOffset = 0;
 	int currNumPos = startNumPos;
 	int currCharPos = startCharPos;
+	int length = currentShip->health;
 
 	if (strcmp(direction, "North") == 0 || strcmp(direction, "NORTH") == 0 || strcmp(direction, "north") == 0)
 		numPosOffset = -1;
@@ -167,8 +250,9 @@ void setShipPos(ship *ship, int startNumPos, int startCharPos, char *direction) 
 
 	int i;
 	for (i = 0; i < length; i++){
-		(&ship).x[i] = currNumPos;
-		(&ship).y[i] = currCharPos;
+		currentShip->x[i] = currNumPos;
+		currentShip->y[i] = currCharPos;
+		map[currNumPos - 1][currCharPos - 1] = 1;
 
 		currNumPos += numPosOffset;
 		currCharPos += charPosOffset;
@@ -176,93 +260,83 @@ void setShipPos(ship *ship, int startNumPos, int startCharPos, char *direction) 
 }
 
 void chooseShipPositions(int type) {
-	int i = 0;
 	int numShips;
 	char *shipType;
 	switch (type) {
-		case(0) {
+		case 0:
 			shipType = "Aircraft Carrier";
 			numShips = numAircraftCarrier;
 			break;
-		}
-		case(1) {
+		case 1:
 			shipType = "Battleship";
 			numShips = numBattleship;
 			break;
-		}
-		case(2) {
+		case 2:
 			shipType = "Submarine";
 			numShips = numSubmarine;
 			break;
-		}
-		case(3) {
+		case 3:
 			shipType = "Cruiser";
 			numShips = numCruiser;
 			break;
-		}
-		case(4) {
+		case 4:
 			shipType = "Destroyer";
 			numDestroyer = numDestroyer;
 			break;
-		}
 	}
+	
+	int i = 0;
 	while (i < numShips) {
-		ship *ship;
+		ship *currentShip;
 		switch (type) {
-			case(0) {
-				INIT_AIRCRAFT_CARRIER(ship);
+			case 0:
+				INIT_AIRCRAFT_CARRIER(currentShip);
 				break;
-			}
-			case(1) {
-				INIT_BATTLESHIP(ship);
+			case 1:
+				INIT_BATTLESHIP(currentShip);
 				break;
-			}
-			case(2) {
-				INIT_SUBMARINE(ship);
+			case 2:
+				INIT_SUBMARINE(currentShip);
 				break;
-			}
-			case(3) {
-				INIT_CRUISER(ship);
+			case 3:
+				INIT_CRUISER(currentShip);
 				break;
-			}
-			case(4) {
-				INIT_DESTROYER(ship);
+			case 4:
+				INIT_DESTROYER(currentShip);
 				break;
-			}
 		}
+		
 		int *numPos;
 		char *charPos;
-		char *direction[5];
 		int charPosToNum;
-		printf("Where do you want to put %s %d?\nFormat: Num Char Direction (North, South, East, West)\n
-			Example: 4 A South", shipType, i);
+		char *direction[5];
+		printf("Where do you want to put %s %d? \nFormat: Num Char Direction (North, East, South, West) \nExample: 4 A South \n", shipType, i);
 		scanf("%d %c %s", numPos, charPos, direction);
 		charPosToNum = (int)(&charPos) - 64;
-		if (checkValidPos(&numPos, charPosToNum, direction)) {
-			setAircraftPos(tmp, numPos, charPosToNum, direction);
+		
+		if (checkValidPos(&numPos, charPosToNum, currentShip->health, direction)) {
+			setShipPos(currentShip, numPos, charPosToNum, direction);
+			
+			switch (type) {
+				case 0:
+					listAircraftCarrier[i] = currentShip;
+					break;
+				case 1:
+					listBattleship[i] = currentShip;
+					break;
+				case 2:
+					listSubmarine[i] = currentShip;
+					break;
+				case 3:
+					listCruiser[i] = currentShip;
+					break;
+				case 4:
+					listDestroyer[i] = currentShip;
+					break;
+			}
+			
 			i++;
-		} else {
-			printf("ERROR: Position is not valid\n");
-		}
+		} else
+			fprintf(stderr, "ERROR: position is not valid\n");
 	}
-}
-
-
-// Main method
-int main(int argc, char *argv[]) {
-	// Check for proper number of commandline arguments
-	// Expect program name in argv[0], IP address in argv[1], and port # in argv[2]
-	if (argc < 3) {
-		fprintf(stderr,"Program Usage: %s hostname port\n", argv[0]);
-		return 1;
-	}
-	connectToServer(argv[1], argv[2]);
-	chooseShipPositions(0);
-	chooseShipPositions(1);
-	chooseShipPositions(2);
-	chooseShipPositions(3);
-	chooseShipPositions(4);
-	closeSocket();
-
-	return 0;
 }
