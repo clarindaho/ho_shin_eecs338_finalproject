@@ -20,6 +20,7 @@ Create a 2-player battleship that uses sockets (server and client).
 
 ### Initialization
 	- Printing out instructions at the beginning
+	
     - Configuration method
 		- How large the board will be (max 20x20), how many ships to generate, etc. 
  
