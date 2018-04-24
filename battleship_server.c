@@ -326,6 +326,7 @@ void configureGame(){
 	usleep(500);
 }
 
+// Checks to see whether or not ship can be placed at this position
 int checkValidPos(int startNumPos, int startCharPos, int length, char *direction) {
 	int numPosOffset = 0;
 	int charPosOffset = 0;
@@ -356,6 +357,7 @@ int checkValidPos(int startNumPos, int startCharPos, int length, char *direction
 	return 1;
 }
 
+// Configures the map using the placement of the ship
 void setShipPos(ship *currentShip, int startNumPos, int startCharPos, char *direction) {
 	int numPosOffset = 0;
 	int charPosOffset = 0;
@@ -383,6 +385,7 @@ void setShipPos(ship *currentShip, int startNumPos, int startCharPos, char *dire
 	}
 }
 
+// Takes in user input to determine where to put the ships on the board.
 void chooseShipPositions(int type) {
 	int numShips;
 	char *shipType;
