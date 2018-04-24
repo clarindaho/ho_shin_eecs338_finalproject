@@ -26,54 +26,9 @@ typedef struct {
 	int y[5];
 } ship;
 
-void INIT_AIRCRAFT_CARRIER(ship *aircraftCarrier){
-	aircraftCarrier->health = 5;
-
-	int i;
-	for (i = 0; i < 5; i++) {
-		aircraftCarrier->x[i] = -1;
-		aircraftCarrier->y[i] = -1;
-	}
-}
-
-void INIT_BATTLESHIP(ship *battleship){
-	battleship->health = 4;
-	
-	int i;
-	for (i = 0; i < 5; i++) {
-		battleship->x[i] = -1;
-		battleship->y[i] = -1;
-	}
-}
-
-void INIT_SUBMARINE(ship *submarine){
-	submarine->health = 3;
-	
-	int i;
-	for (i = 0; i < 5; i++) {
-		submarine->x[i] = -1;
-		submarine->y[i] = -1;
-	}
-}
-
-void INIT_CRUISER(ship *cruiser){
-	cruiser->health = 3;
-
-	int i;
-	for (i = 0; i < 5; i++) {
-		cruiser->x[i] = -1;
-		cruiser->y[i] = -1;
-	}
-}
-
-void INIT_DESTROYER(ship *destroyer){
-	destroyer->health = 2;
-	
-	int i;
-	for (i = 0; i < 5; i++) {
-		destroyer->x[i] = -1;
-		destroyer->y[i] = -1;
-	}
+ship* INIT_SHIP(int health){
+	ship *newShip = {health, {-1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1}};
+	return newShip;
 }
 
 //
@@ -171,8 +126,10 @@ void acceptConnection(){
 	socklen_t clilen = sizeof(cli_addr); 
 	
 	newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-	if (newsockfd < 0) 
-		error("ERROR: could not accept incoming connection request\n");
+	if (newsockfd < 0){
+		fprintf(stderr, "ERROR: could not accept incoming connection request\n");
+		exit(2);
+	}
 
 	bzero(buffer, sizeof(buffer));
 }
@@ -419,57 +376,46 @@ void setShipPos(ship *currentShip, int startNumPos, int startCharPos, char *dire
 void chooseShipPositions(int type) {
 	int numShips;
 	char *shipType;
+	int health;
 	switch (type) {
 		case 0:
 			shipType = "Aircraft Carrier";
 			numShips = numAircraftCarrier;
+			health = 5;
 			break;
 		case 1:
 			shipType = "Battleship";
 			numShips = numBattleship;
+			health = 4;
 			break;
 		case 2:
 			shipType = "Submarine";
 			numShips = numSubmarine;
+			health = 3;
 			break;
 		case 3:
 			shipType = "Cruiser";
 			numShips = numCruiser;
+			health = 3;
 			break;
 		case 4:
 			shipType = "Destroyer";
 			numDestroyer = numDestroyer;
+			health = 2;
 			break;
 	}
 	
 	int i = 0;
 	while (i < numShips) {
-		ship *currentShip;
-		switch (type) {
-			case 0:
-				INIT_AIRCRAFT_CARRIER(currentShip);
-				break;
-			case 1:
-				INIT_BATTLESHIP(currentShip);
-				break;
-			case 2:
-				INIT_SUBMARINE(currentShip);
-				break;
-			case 3:
-				INIT_CRUISER(currentShip);
-				break;
-			case 4:
-				INIT_DESTROYER(currentShip);
-				break;
-		}
+		ship *currentShip = INIT_SHIP(health);
 		
 		int *numPos;
 		char *charPos;
 		int charPosToNum;
-		char *direction[5];
+		char direction[5];
 		printf("Where do you want to put %s %d? \nFormat: Num Char Direction (North, East, South, West) \nExample: 4 A South \n", shipType, i);
 		scanf("%d %c %s", numPos, charPos, direction);
-		charPosToNum = (int)(&charPos) - 64;
+		charPosToNum = (&charPos) - 'A' + 1;
 		
 		if (checkValidPos(&numPos, charPosToNum, currentShip->health, direction)) {
 			setShipPos(currentShip, numPos, charPosToNum, direction);
