@@ -184,8 +184,8 @@ int checkValidPos(int startNumPos, int startCharPos, int length, char *direction
 
 	int i;
 	for (i = 0; i < length; i++){
-		printf("%d %d\n", currNumPos, currCharPos);
-		fflush(stdout);
+		//printf("%d %d\n", currNumPos, currCharPos);
+		//fflush(stdout);
 		if (currNumPos < 1 || currNumPos > mapExtent || currCharPos < 1 || currCharPos > mapExtent)
 			return 0;
 		else if (map[currNumPos - 1][currCharPos - 1] != 0)
@@ -270,7 +270,7 @@ void chooseShipPositions(int type) {
 
 		charPosToNum = charPos - 'A' + 1;
 
-		printf("numPos:%d charPos:%d health:%d direction: %s\n", numPos, charPosToNum, currentShip->health, direction);
+		//printf("numPos:%d charPos:%d health:%d direction: %s\n", numPos, charPosToNum, currentShip->health, direction);
 		fflush(stdout);
 
 		if (checkValidPos(numPos, charPosToNum, currentShip->health, direction) == 1) {
