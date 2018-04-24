@@ -26,8 +26,16 @@ typedef struct {
 	int y[5];
 } ship;
 
-ship* INIT_SHIP(int health){
-	ship *newShip = {health, {-1, -1, -1, -1, -1}, {-1, -1, -1, -1, -1}};
+ship* INIT_SHIP(int healthPts){
+	ship *newShip = malloc(sizeof(ship));
+	newShip->health = healthPts;
+
+	int i;
+	for (i = 0; i < 5; i++) {
+		newShip->x[i] = -1;
+		newShip->y[i] = -1;
+	}
+
 	return newShip;
 }
 
@@ -335,6 +343,8 @@ int checkValidPos(int startNumPos, int startCharPos, int length, char *direction
 
 	int i;
 	for (i = 0; i < length; i++){
+		//printf("%d %d\n", currNumPos, currCharPos);
+		//fflush(stdout);
 		if (currNumPos < 1 || currNumPos > mapExtent || currCharPos < 1 || currCharPos > mapExtent)
 			return 0;
 		else if (map[currNumPos - 1][currCharPos - 1] != 0)
@@ -376,48 +386,53 @@ void setShipPos(ship *currentShip, int startNumPos, int startCharPos, char *dire
 void chooseShipPositions(int type) {
 	int numShips;
 	char *shipType;
-	int health;
+	int healthPts;
 	switch (type) {
 		case 0:
 			shipType = "Aircraft Carrier";
 			numShips = numAircraftCarrier;
-			health = 5;
+			healthPts = 5;
 			break;
 		case 1:
 			shipType = "Battleship";
 			numShips = numBattleship;
-			health = 4;
+			healthPts = 4;
 			break;
 		case 2:
 			shipType = "Submarine";
 			numShips = numSubmarine;
-			health = 3;
+			healthPts = 3;
 			break;
 		case 3:
 			shipType = "Cruiser";
 			numShips = numCruiser;
-			health = 3;
+			healthPts = 3;
 			break;
 		case 4:
 			shipType = "Destroyer";
 			numDestroyer = numDestroyer;
-			health = 2;
+			healthPts = 2;
 			break;
 	}
 	
 	int i = 0;
 	while (i < numShips) {
-		ship *currentShip = INIT_SHIP(health);
+		ship *currentShip = INIT_SHIP(healthPts);
 		
-		int *numPos;
-		char *charPos;
-		int charPosToNum;
-		char direction[5];
+		int numPos = 0;
+		char charPos = 'A';
+		int charPosToNum = 0;
+		char direction[5] = "";
+		
 		printf("Where do you want to put %s %d? \nFormat: Num Char Direction (North, East, South, West) \nExample: 4 A South \n", shipType, i);
-		scanf("%d %c %s", numPos, charPos, direction);
-		charPosToNum = (&charPos) - 'A' + 1;
-		
-		if (checkValidPos(&numPos, charPosToNum, currentShip->health, direction)) {
+		scanf("%d %c %s", &numPos, &charPos, &direction);
+
+		charPosToNum = charPos - 'A' + 1;
+
+		//printf("numPos:%d charPos:%d health:%d direction: %s\n", numPos, charPosToNum, currentShip->health, direction);
+		fflush(stdout);
+
+		if (checkValidPos(numPos, charPosToNum, currentShip->health, direction) == 1) {
 			setShipPos(currentShip, numPos, charPosToNum, direction);
 			
 			switch (type) {
