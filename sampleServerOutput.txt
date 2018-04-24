@@ -1,0 +1,16 @@
+jashin@jashin:~/ho_shin_eecs338_finalproject$ ./battleship_client 127.0.0.1 5000
+Where do you want to put Aircraft Carrier 0?
+Format: Num Char Direction (North, East, South, West)
+Example: 4 A South
+4 A South
+Where do you want to put Aircraft Carrier 1?
+Format: Num Char Direction (North, East, South, West)
+Example: 4 A South
+10 F East
+Where do you want to put Battleship 0?
+Format: Num Char Direction (North, East, South, West)
+Example: 4 A South
+6 H North
+Where do you want to put Battleship 1?
+Format: Num Char Direction (North, East, South, West)
+Example: 4 A South
