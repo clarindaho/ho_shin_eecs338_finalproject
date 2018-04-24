@@ -54,6 +54,7 @@ Create a 2-player battleship that uses sockets (server and client).
 			- Player 1 of battleship game
 			- Server side of socket
 			- Responsible for setting up the game (i.e. board size, number of each type of ships)
+		- makefile
 			
 	- Major Data Structures
 		- Struct ship
