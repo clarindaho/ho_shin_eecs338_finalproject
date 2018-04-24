@@ -44,3 +44,50 @@ Create a 2-player battleship that uses sockets (server and client).
     
     - Check to see if total health is 0, if it is 0, end the game
     - If not, clear the terminal, switch turns
+	
+### Design Document
+	- Files
+		- battleship_client.c
+			- Player 2 of battleship game
+			- Client side of socket
+		- battleship_server.c
+			- Player 1 of battleship game
+			- Server side of socket
+			- Responsible for setting up the game (i.e. board size, number of each type of ships)
+			
+	- Major Data Structures
+		- Struct ship
+			- int health: health points of the ship
+			- int x[5]: x position of the ship
+			- int y[5]: y position of the ship
+		- 1D ship array
+			- Contains all the ships of the same type on the player's board
+			- One array for each type
+			- Future update: combine all ship type arrays to one single array
+		- 2D int array map
+			- Contains the current state of the board
+			- Values
+				- 0: empty
+				- 1: ship
+				- 2: hit
+				- 3: miss
+			- Future update: when the map is printed, the numbers will be converted to corresponding character mentioned abovein the map view
+		- Socket & Server socket
+			- Used for communication of moves between the two players
+			
+	- Console Output
+		- Sample player 1 output can be found in file 'sampleServerOutput.txt'
+		- Sample player 2 output can be found in file 'sampleClientOutput.txt'
+
+### Team Member Responsibilities
+	- Coded using paired programming techniques
+	- Clarinda
+		- Configured the server socket for battleship_server.c
+		- Wrote configureBoard() method
+		- Wrote the checkValidPos() method
+		- Worked on the ship struct
+	- Jason
+		- Configured the socket for battleship_client.c
+		- Wrote setupFromServer() method
+		- Wrote the chooseShipPositions() method
+		- Worked on the ship struct
