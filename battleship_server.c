@@ -48,7 +48,10 @@ int newsockfd;		// new socket connection with client
 char buffer[256];	// buffer
 
 int map[20][20];
+int enemyMap[20][20];
 int mapExtent;
+
+int gameOver = 1;
 
 ship *listAircraftCarrier[2];
 int numAircraftCarrier;
@@ -78,8 +81,14 @@ int checkValidPos(int startNumPos, int startCharPos, int length, char *direction
 void setShipPos(ship *currentShip, int startNumPos, int startCharPos, char *direction);
 void chooseShipPositions(int type);
 
-void clearBoard();
 void printBoard();
+void clearBoard();
+void printEnemyBoard();
+void clearEnemyBoard();
+
+void turn();
+void attackTurn();
+void defendTurn();
 
 char *hitShip();
 char *hitAircraftCarrier();
@@ -110,6 +119,8 @@ int main(int argc, char *argv[]) {
 	int i;
 	for (i = 0; i < 5; i++)
 		chooseShipPositions(i);
+	
+	turn();
 	
 	closeSockets();
 	
@@ -476,6 +487,8 @@ void chooseShipPositions(int type) {
 
 // Prints out the current status of the board
 void printBoard() {
+	printf("Your Board: \n");
+	
 	int i, j, c, n;
 	printf("   ");
 	for (c = 65; c < 65 + mapExtent; c++) {
@@ -503,6 +516,8 @@ void printBoard() {
 		}
 		printf("\n");
 	}
+	
+	fflush(stdout);
 }
 
 // Sets all spots on the board to 0
@@ -514,7 +529,6 @@ void clearBoard() {
 		}
 	}
 }
-
 
 char *hitAircraftCarrier(int xPos, int yPos) {
 	int i;
@@ -650,4 +664,149 @@ char *hitShip(int x, int y) {
 		return message;
 	}
 	return message;
+}
+
+// Prints out the current status of the enemy board
+void printEnemyBoard() {
+	printf("Enemy Board: \n");
+	
+	int i, j, c, n;
+	printf("   ");
+	for (c = 65; c < 65 + mapExtent; c++) {
+		printf("%c ", c);
+	}
+	printf("\n");
+	for (i = 0; i < mapExtent; i++) {
+		if (i < 9)
+			printf("%d  ", (i + 1));
+		else
+			printf("%d ", (i + 1));
+		for (j = 0; j < mapExtent; j++) {
+			switch(enemyMap[i][j]) {
+				case 0:
+					printf("_ ");
+					break;
+				case 1:
+					printf("B ");
+					break;
+				case 2:
+					printf("X ");
+				case 3:
+					printf("  ");
+			}
+		}
+		printf("\n");
+	}
+	
+	fflush(stdout);
+}
+
+// Sets all spots on the enemy board to 0
+void clearEnemyBoard() {
+	int i, j;
+	for (i = 0; i < mapExtent; i++) {
+		for (j = 0; j < mapExtent; j++) {
+			enemyMap[i][j] = 0;
+		}
+	}
+}
+
+void turn(){
+	while(gameOver == 1){
+		attackTurn();
+		defendTurn();
+	}
+}
+
+void attackTurn(){
+	if (gameOver == 1){
+		printEnemyBoard();
+		
+		int numPos;
+		char charPos;
+		int charPosToNum;
+		
+		// ask user for input
+		printf("What position do you want to hit? \nFormat: Num Char \nExample: 4 A \n");
+		scanf("%d %c", &numPos, &charPos);
+
+		charPosToNum = charPos - 'A' + 1;
+		
+		// send user input through socket to opponent to check
+		bzero(buffer, sizeof(buffer));
+		sprintf(buffer, "%d %d\n", numPos, charPosToNum);
+		
+		int n = write(newsockfd, buffer, sizeof(buffer));
+		if (n < 0) {
+			fprintf(stderr, "ERROR: could not write to socket\n");
+			exit(2);
+		}
+		
+		usleep(500);
+		
+		// read response from opponent
+		bzero(buffer, sizeof(buffer));
+		n = read(sockfd, buffer, sizeof(buffer));
+		if (n < 0) {
+			fprintf(stderr, "ERROR: could not read from socket\n");
+			exit(2);
+		}
+		else {
+			int code;
+			char* token;
+			
+			token = strtok(buffer, ' ');
+			code = atoi(token);
+			while (token != NULL){
+				printf("%s ", token);
+				token = strtok(NULL, '.');
+			}
+			printf("\n");
+			
+			if (code == 0) {			// miss
+				enemyMap[numPos - 1][charPosToNum - 1] = 3;
+			} else if (code == 1) {		// hit
+				enemyMap[numPos - 1][charPosToNum - 1] = 2;
+			} else if (code == 2) {		// game over
+				enemyMap[numPos - 1][charPosToNum - 1] = 2;
+				gameOver = 0;
+			}
+			
+			printEnemyBoard();
+		}
+	}
+}
+
+void defendTurn(){
+	if (gameOver == 1){
+		printf("Waiting for opponent move...\n");
+		fflush(stdout);
+		
+		// read input from opponent
+		bzero(buffer, sizeof(buffer));
+		int n = read(sockfd, buffer, sizeof(buffer));
+		if (n < 0) {
+			fprintf(stderr, "ERROR: could not read from socket\n");
+			exit(2);
+		}
+		else {
+			int numPos = atoi(strtok(buffer, ' '));
+			int charPosToNum = atoi(stroken(NULL, ' '));
+			
+			// determine if the opponent hit your ship
+			char* message = hitShip(numPos, charPosToNum);
+			
+			printBoard();
+			
+			// send response to opponent
+			bzero(buffer, sizeof(buffer));
+			sprintf(buffer, "%s\n", message);
+		
+			n = write(newsockfd, buffer, sizeof(buffer));
+			if (n < 0) {
+				fprintf(stderr, "ERROR: could not write to socket\n");
+				exit(2);
+			}
+		}
+	}
 }
