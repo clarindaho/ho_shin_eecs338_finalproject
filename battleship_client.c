@@ -79,6 +79,13 @@ void chooseShipPositions(int type);
 void clearBoard();
 void printBoard();
 
+char *hitShip();
+char *hitAircraftCarrier();
+char *hitBattleship();
+char *hitSubmarine();
+char *hitCruiser();
+char *hitDestroyer();
+
 //
 // method definitions
 //
@@ -346,4 +353,141 @@ void clearBoard() {
 			map[i][j] = 0;
 		}
 	}
+}
+
+
+char *hitAircraftCarrier(int xPos, int yPos) {
+	int i;
+	for (i = 0; i < 2; i++) {
+		if ((listAircraftCarrier[i] != NULL) && (listAircraftCarrier[i]->health > 0)) {
+			int j;
+			for (j = 0; j < 5; j++) {
+				if (listAircraftCarrier[i]->x[j] == xPos - 1 && listAircraftCarrier[i]->y[j] == yPos - 1) {
+					map[xPos - 1][yPos - 1] = 0;
+					listAircraftCarrier[i]->health = listAircraftCarrier[i]->health - 1;
+					if (listAircraftCarrier[i]->health <= 0) {
+						return "1You sunk your opponent's aircraft carrier!";
+					} else {
+						return "1You hit one of your opponent's ships!";
+					}
+				}
+			}
+		} else {
+			return "0You missed!";
+		}
+	}
+}
+
+char *hitBattleship(int xPos, int yPos) {
+	int i;
+	for (i = 0; i < 3; i++) {
+		if ((listBattleship[i] != NULL) && (listBattleship[i]->health > 0)) {
+			int j;
+			for (j = 0; j < 4; j++) {
+				if (listBattleship[i]->x[j] == xPos - 1 && listBattleship[i]->y[j] == yPos - 1) {
+					map[xPos - 1][yPos - 1] = 0;
+					listBattleship[i]->health = listBattleship[i]->health - 1;
+					if (listBattleship[i]->health <= 0) {
+						return "1You sunk your opponent's battleship!";
+					} else {
+						return "1You hit one of your opponent's ships!";
+					}
+				}
+			}
+		} else {
+			return "0You missed!";
+		}
+	}
+}
+
+char *hitSubmarine(int xPos, int yPos) {
+	int i;
+	for (i = 0; i < 3; i++) {
+		if ((listSubmarine[i] != NULL) && (listSubmarine[i]->health > 0)) {
+			int j;
+			for (j = 0; j < 3; j++) {
+				if (listSubmarine[i]->x[j] == xPos - 1 && listSubmarine[i]->y[j] == yPos - 1) {
+					map[xPos - 1][yPos - 1] = 0;
+					listSubmarine[i]->health = listSubmarine[i]->health - 1;
+					if (listSubmarine[i]->health <= 0) {
+						return "1You sunk your opponent's submarine!";
+					} else {
+						return "1You hit one of your opponent's ships!";
+					}
+				}
+			}
+		} else {
+			return "0You missed!";
+		}
+	}
+}
+
+char *hitCruiser(int xPos, int yPos) {
+	int i;
+	for (i = 0; i < 3; i++) {
+		if ((listCruiser[i] != NULL) && (listCruiser[i]->health > 0)) {
+			int j;
+			for (j = 0; j < 3; j++) {
+				if (listCruiser[i]->x[j] == xPos - 1 && listCruiser[i]->y[j] == yPos - 1) {
+					map[xPos - 1][yPos - 1] = 0;
+					listCruiser[i]->health = listCruiser[i]->health - 1;
+					if (listCruiser[i]->health <= 0) {
+						return "1You sunk your opponent's cruiser!";
+					} else {
+						return "1You hit one of your opponent's ships!";
+					}
+				}
+			}
+		} else {
+			return "0You missed!";
+		}
+	}
+}
+
+char *hitDestroyer(int xPos, int yPos) {
+	int i;
+	for (i = 0; i < 4; i++) {
+		if ((listDestroyer[i] != NULL) && (listDestroyer[i]->health > 0)) {
+			int j;
+			for (j = 0; j < 2; j++) {
+				if (listDestroyer[i]->x[j] == xPos - 1 && listDestroyer[i]->y[j] == yPos - 1) {
+					map[xPos - 1][yPos - 1] = 0;
+					listDestroyer[i]->health = listDestroyer[i]->health - 1;
+					if (listDestroyer[i]->health <= 0) {
+						return "1You sunk your opponent's destroyer!";
+					} else {
+						return "1You hit one of your opponent's ships!";
+					}
+				}
+			}
+		} else {
+			return "0You missed!";
+		}
+	}
+}
+
+// Checks to see if a ship has been 
+char *hitShip(int x, int y) {
+	char *message;
+	message = hitAircraftCarrier(x, y);
+	if (strcmp(message, "0You missed!") != 0) {
+		return message;
+	}
+	message = hitBattleship(x, y);
+	if (strcmp(message, "0You missed!") != 0) {
+		return message;
+	}
+	message = hitSubmarine(x, y);
+	if (strcmp(message, "0You missed!") != 0) {
+		return message;
+	}
+	message = hitCruiser(x, y);
+	if (strcmp(message, "0You missed!") != 0) {
+		return message;
+	}
+	message = hitDestroyer(x, y);
+	if (strcmp(message, "0You missed!") != 0) {
+		return message;
+	}
+	return message;
 }
