@@ -354,6 +354,51 @@ void clearBoard() {
 	}
 }
 
+// Prints out the current status of the enemy board
+void printEnemyBoard() {
+	printf("Enemy Board: \n");
+	
+	int i, j, c, n;
+	printf("   ");
+	for (c = 65; c < 65 + mapExtent; c++) {
+		printf("%c ", c);
+	}
+	printf("\n");
+	for (i = 0; i < mapExtent; i++) {
+		if (i < 9)
+			printf("%d  ", (i + 1));
+		else
+			printf("%d ", (i + 1));
+		for (j = 0; j < mapExtent; j++) {
+			switch(enemyMap[i][j]) {
+				case 0:
+					printf("_ ");
+					break;
+				case 1:
+					printf("B ");
+					break;
+				case 2:
+					printf("X ");
+				case 3:
+					printf("  ");
+			}
+		}
+		printf("\n");
+	}
+	
+	fflush(stdout);
+}
+
+// Sets all spots on the enemy board to 0
+void clearEnemyBoard() {
+	int i, j;
+	for (i = 0; i < mapExtent; i++) {
+		for (j = 0; j < mapExtent; j++) {
+			enemyMap[i][j] = 0;
+		}
+	}
+}
+
 void turn(){
 	while(gameOver == 1){
 		defendTurn();
@@ -363,6 +408,8 @@ void turn(){
 
 void attackTurn(){
 	if (gameOver == 1){
+		printEnemyBoard();
+		
 		int numPos;
 		char charPos;
 		int charPosToNum;
@@ -412,6 +459,8 @@ void attackTurn(){
 				enemyMap[numPos - 1][charPosToNum - 1] = 2;
 				gameOver = 0;
 			}
+			
+			printEnemyBoard();
 		}
 	}
 }
@@ -431,6 +480,8 @@ void defendTurn(){
 			
 			// determine if the opponent hit your ship
 			char* message = hitShip(numPos, charPosToNum);
+			
+			printBoard();
 			
 			// send response to opponent
 			bzero(buffer, sizeof(buffer));
