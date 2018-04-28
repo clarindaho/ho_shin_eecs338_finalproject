@@ -78,6 +78,9 @@ int checkValidPos(int startNumPos, int startCharPos, int length, char *direction
 void setShipPos(ship *currentShip, int startNumPos, int startCharPos, char *direction);
 void chooseShipPositions(int type);
 
+void clearBoard();
+void printBoard();
+
 //
 // method definitions
 //
@@ -94,6 +97,7 @@ int main(int argc, char *argv[]) {
 	createServerSocket(argv[1]);
 	acceptConnection();
 	
+	clearBoard();
 	configureGame();
 	
 	int i;
@@ -427,6 +431,7 @@ void chooseShipPositions(int type) {
 		int charPosToNum = 0;
 		char direction[5] = "";
 		
+		printBoard();
 		printf("Where do you want to put %s %d? \nFormat: Num Char Direction (North, East, South, West) \nExample: 4 A South \n", shipType, i);
 		scanf("%d %c %s", &numPos, &charPos, &direction);
 
@@ -459,5 +464,46 @@ void chooseShipPositions(int type) {
 			i++;
 		} else
 			fprintf(stderr, "ERROR: position is not valid\n");
+	}
+}
+
+// Prints out the current status of the board
+void printBoard() {
+	int i, j, c, n;
+	printf("   ");
+	for (c = 65; c < 65 + mapExtent; c++) {
+		printf("%c ", c);
+	}
+	printf("\n");
+	for (i = 0; i < mapExtent; i++) {
+		if (i < 9)
+			printf("%d  ", (i + 1));
+		else
+			printf("%d ", (i + 1));
+		for (j = 0; j < mapExtent; j++) {
+			switch(map[i][j]) {
+				case 0:
+					printf("_ ");
+					break;
+				case 1:
+					printf("B ");
+					break;
+				case 2:
+					printf("X ");
+				case 3:
+					printf("  ");
+			}
+		}
+		printf("\n");
+	}
+}
+
+// Sets all spots on the board to 0
+void clearBoard() {
+	int i, j;
+	for (i = 0; i < mapExtent; i++) {
+		for (j = 0; j < mapExtent; j++) {
+			map[i][j] = 0;
+		}
 	}
 }
