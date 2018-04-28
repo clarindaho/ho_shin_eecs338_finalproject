@@ -47,7 +47,10 @@ int sockfd;			// client socket
 char buffer[256];	// buffer
 
 int map[20][20];
+int enemyMap[20][20];
 int mapExtent;
+
+int gameOver = 1;
 
 ship *listAircraftCarrier[2];
 int numAircraftCarrier;
@@ -76,8 +79,8 @@ int checkValidPos(int startNumPos, int startCharPos, int length, char *direction
 void setShipPos(ship *currentShip, int startNumPos, int startCharPos, char *direction);
 void chooseShipPositions(int type);
 
-void clearBoard();
 void printBoard();
+void clearBoard();
 
 //
 // method definitions
@@ -344,6 +347,97 @@ void clearBoard() {
 	for (i = 0; i < mapExtent; i++) {
 		for (j = 0; j < mapExtent; j++) {
 			map[i][j] = 0;
+		}
+	}
+}
+
+void turn(){
+	while(gameOver == 1){
+		defendTurn();
+		attackTurn();
+	}
+}
+
+void attackTurn(){
+	if (gameOver == 1){
+		int numPos;
+		char charPos;
+		int charPosToNum;
+		
+		// ask user for input
+		printf("What position do you want to hit? \nFormat: Num Char \nExample: 4 A \n");
+		scanf("%d %c", &numPos, &charPos);
+
+		charPosToNum = charPos - 'A' + 1;
+		
+		// send user input through socket to opponent to check
+		bzero(buffer, sizeof(buffer));
+		sprintf(buffer, "%d %d\n", numPos, charPosToNum);
+		
+		n = write(newsockfd, buffer, sizeof(buffer));
+		if (n < 0) {
+			fprintf(stderr, "ERROR: could not write to socket\n");
+			exit(2);
+		}
+		
+		usleep(500);
+		
+		// read response from opponent
+		bzero(buffer, sizeof(buffer));
+		int n = read(sockfd, buffer, sizeof(buffer));
+		if (n < 0) {
+			fprintf(stderr, "ERROR: could not read from socket\n");
+			exit(2);
+		}
+		else {
+			int code;
+			char* token;
+			
+			token = strtok(buffer, ' ');
+			code = atoi(token);
+			while (token != NULL){
+				printf("%s ", token);
+				token = strtok(NULL, '.');
+			}
+			printf("\n");
+			
+			if (code == 0) {			// miss
+				enemyMap[numPos - 1][charPosToNum - 1] = 3;
+			} else if (code == 1) {		// hit
+				enemyMap[numPos - 1][charPosToNum - 1] = 2;
+			} else if (code == 2) {		// game over
+				enemyMap[numPos - 1][charPosToNum - 1] = 2;
+				gameOver = 0;
+			}
+		}
+	}
+}
+
+void defendTurn(){
+	if (gameOver == 1){
+		// read input from opponent
+		bzero(buffer, sizeof(buffer));
+		int n = read(sockfd, buffer, sizeof(buffer));
+		if (n < 0) {
+			fprintf(stderr, "ERROR: could not read from socket\n");
+			exit(2);
+		}
+		else {
+			int numPos = atoi(strtok(buffer, ' '));
+			int charPosToNum = atoi(stroken(NULL, ' '));
+			
+			// determine if the opponent hit your ship
+			char* message = hitShip(numPos, charPosToNum);
+			
+			// send response to opponent
+			bzero(buffer, sizeof(buffer));
+			sprintf(buffer, "%s\n", message);
+		
+			n = write(newsockfd, buffer, sizeof(buffer));
+			if (n < 0) {
+				fprintf(stderr, "ERROR: could not write to socket\n");
+				exit(2);
+			}
 		}
 	}
 }
