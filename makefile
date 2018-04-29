@@ -1,6 +1,4 @@
-all:
-	gcc -o battleship_server battleship_server.c
-	gcc -o battleship_client battleship_client.c
+all: battleship_server battleship_client
 	
 battleship_server:
 	gcc -o battleship_server battleship_server.c

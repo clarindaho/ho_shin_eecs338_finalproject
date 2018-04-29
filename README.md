@@ -2,7 +2,7 @@
 Clarinda Ho (cqh), Jason Shin (jjs270)
 
 ### Concept
-Create a 2-player battleship that uses sockets (server and client).
+Create a 2-player battleship game that uses sockets (server and client). The server player is allowed to set the board size and the number of ships for each type. 
 
 ### Map
 	- Legend
@@ -16,7 +16,7 @@ Create a 2-player battleship that uses sockets (server and client).
 	  _ _ _ _ _   _ _ _ _ _
 	  _ B X B _   _ _ X _ _
 	  _ _ _ _ _   _ _ _ _ _
-	  _ _ _ _ _   _ _   _ _ 
+	  _ _   _ _   _ _   _ _ 
 
 ### Initialization
 	- Printing out instructions at the beginning
@@ -33,17 +33,21 @@ Create a 2-player battleship that uses sockets (server and client).
   
 ### Running
     - Reading user input for two players
-		- Format: Coordinates (Number, Letter) 
+		- Format: Coordinates (Number, Letter) i.e. 4 A
 		
     - On Miss:
 		- Show the miss on the map for the person shooting
+		- Show the miss on the map for the defending player
 
     - On Hit:
 		- Check to see if ship is sunk
 		- Keep track of ships in a struct, decrement a value representing how much health is left
+		- Show the hit on the map for the player shooting
+		- Show the hit on the map for the defending player
     
-    - Check to see if total health is 0, if it is 0, end the game
-    - If not, clear the terminal, switch turns
+    - Check to see if total health is 0
+		- If total health is 0, end the game
+		- If total health is not 0, switch turns
 	
 ### Design Document
 	- Files
@@ -64,7 +68,6 @@ Create a 2-player battleship that uses sockets (server and client).
 		- 1D ship array
 			- Contains all the ships of the same type on the player's board
 			- One array for each type
-			- Future update: combine all ship type arrays to one single array
 		- 2D int array map
 			- Contains the current state of the board
 			- Values
@@ -72,9 +75,10 @@ Create a 2-player battleship that uses sockets (server and client).
 				- 1: ship
 				- 2: hit
 				- 3: miss
-			- Future update: when the map is printed, the numbers will be converted to corresponding character mentioned abovein the map view
+			- When the map is printed, the numbers will be converted to corresponding character mentioned above in the map view
 		- Socket & Server socket
 			- Used for communication of moves between the two players
+			- Used for communication of whether ships were hit between the two players
 			
 	- Console Output
 		- Sample player 1 output can be found in file 'sampleServerOutput.txt'
@@ -87,8 +91,11 @@ Create a 2-player battleship that uses sockets (server and client).
 		- Wrote configureBoard() method
 		- Wrote the checkValidPos() method
 		- Worked on the ship struct
+		- Worked on turn(), attackTurn(), and defendTurn() methods
 	- Jason
 		- Configured the socket for battleship_client.c
 		- Wrote setupFromServer() method
 		- Wrote the chooseShipPositions() method
 		- Worked on the ship struct
+		- Worked on hitShip() and related methods
+		- Worked on isGameOver() method
