@@ -1,10 +1,10 @@
 ## EECS 338 Final Project
 Clarinda Ho (cqh), Jason Shin (jjs270)
 
-### Concept
+### Concept <br>
 Create a 2-player battleship game that uses sockets (server and client). The server player is allowed to set the board size and the number of ships for each type. 
 
-### Map
+### Map <br>
 	- Legend
 		- B = Ship
 		- X = Hit
@@ -18,7 +18,7 @@ Create a 2-player battleship game that uses sockets (server and client). The ser
 	  _ _ _ _ _   _ _ _ _ _
 	  _ _   _ _   _ _   _ _ 
 
-### Initialization
+### Initialization <br>
 	- Printing out instructions at the beginning
 	
     - Configuration method
@@ -31,7 +31,7 @@ Create a 2-player battleship game that uses sockets (server and client). The ser
 		- Each player will choose where they will place the ship and the direction to orient the ship
 		- Format: (Coordinate, Direction) i.e. 4 A EAST
   
-### Running
+### Running <br>
     - Reading user input for two players
 		- Format: Coordinates (Number, Letter) i.e. 4 A
 		
@@ -49,7 +49,7 @@ Create a 2-player battleship game that uses sockets (server and client). The ser
 		- If total health is 0, end the game
 		- If total health is not 0, switch turns
 	
-### Design Document
+### Design Document <br>
 	- Files
 		- battleship_client.c
 			- Player 2 of battleship game
@@ -84,7 +84,7 @@ Create a 2-player battleship game that uses sockets (server and client). The ser
 		- Sample player 1 output can be found in file 'sampleServerOutput.txt'
 		- Sample player 2 output can be found in file 'sampleClientOutput.txt'
 
-### Team Member Responsibilities
+### Team Member Responsibilities <br>
 	- Coded using paired programming techniques
 	- Clarinda
 		- Configured the server socket for battleship_server.c
