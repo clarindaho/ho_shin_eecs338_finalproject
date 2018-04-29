@@ -51,6 +51,7 @@ int map[20][20];
 int enemyMap[20][20];
 int mapExtent;
 
+int totalHealth = 0;
 int gameOver = 1;
 
 ship *listAircraftCarrier[2];
@@ -217,7 +218,7 @@ void configureGame(){
 			exit(0);
 		else
 			numAircraftCarrier = atoi(temp);
-		
+			totalHealth += (numAircraftCarrier * 5);
 		if (numAircraftCarrier > 2 || numAircraftCarrier < 0)
 			fprintf(stderr, "ERROR: not a valid option\n");
 		else
@@ -245,7 +246,7 @@ void configureGame(){
 			exit(0);
 		else
 			numBattleship = atoi(temp);
-		
+			totalHealth = (numBattleship * 4);
 		if (numBattleship > 3 || numBattleship < 0)
 			fprintf(stderr, "ERROR: not a valid option\n");
 		else
@@ -273,7 +274,7 @@ void configureGame(){
 			exit(0);
 		else
 			numSubmarine = atoi(temp);
-		
+			totalHealth = (numBattleship * 3);
 		if (numSubmarine > 3 || numSubmarine < 0)
 			fprintf(stderr, "ERROR: not a valid option\n");
 		else
@@ -301,7 +302,7 @@ void configureGame(){
 			exit(0);
 		else
 			numCruiser = atoi(temp);
-		
+			totalHealth = (numBattleship * 3);
 		if (numCruiser > 3 || numCruiser < 0)
 			fprintf(stderr, "ERROR: not a valid option\n");
 		else
@@ -329,7 +330,7 @@ void configureGame(){
 			exit(0);
 		else
 			numDestroyer = atoi(temp);
-		
+			totalHealth = (numBattleship * 2);
 		if (numDestroyer > 4 || numDestroyer < 0)
 			fprintf(stderr, "ERROR: not a valid option\n");
 		else
@@ -435,7 +436,7 @@ void chooseShipPositions(int type) {
 			break;
 		case 4:
 			shipType = "Destroyer";
-			numDestroyer = numDestroyer;
+			numShips = numDestroyer;
 			healthPts = 2;
 			break;
 	}
@@ -532,135 +533,135 @@ void clearBoard() {
 
 char *hitAircraftCarrier(int xPos, int yPos) {
 	int i;
-	for (i = 0; i < 2; i++) {
-		if ((listAircraftCarrier[i] != NULL) && (listAircraftCarrier[i]->health > 0)) {
+	for (i = 0; i < numAircraftCarrier; i++) {
+		if (listAircraftCarrier[i]->health > 0) {
 			int j;
 			for (j = 0; j < 5; j++) {
-				if (listAircraftCarrier[i]->x[j] == xPos - 1 && listAircraftCarrier[i]->y[j] == yPos - 1) {
+				if (listAircraftCarrier[i]->x[j] == xPos && listAircraftCarrier[i]->y[j] == yPos) {
 					map[xPos - 1][yPos - 1] = 0;
 					listAircraftCarrier[i]->health = listAircraftCarrier[i]->health - 1;
+					totalHealth -= 1;
 					if (listAircraftCarrier[i]->health <= 0) {
-						return "1You sunk your opponent's aircraft carrier!";
+						return "1 You sunk your opponent's aircraft carrier!";
 					} else {
-						return "1You hit one of your opponent's ships!";
+						return "1 You hit one of your opponent's ships!";
 					}
 				}
 			}
-		} else {
-			return "0You missed!";
 		}
 	}
+	return "0 You missed!";
 }
 
 char *hitBattleship(int xPos, int yPos) {
 	int i;
-	for (i = 0; i < 3; i++) {
-		if ((listBattleship[i] != NULL) && (listBattleship[i]->health > 0)) {
+	for (i = 0; i < numBattleship; i++) {
+		if (listBattleship[i]->health > 0) {
 			int j;
 			for (j = 0; j < 4; j++) {
-				if (listBattleship[i]->x[j] == xPos - 1 && listBattleship[i]->y[j] == yPos - 1) {
+				if (listBattleship[i]->x[j] == xPos && listBattleship[i]->y[j] == yPos) {
 					map[xPos - 1][yPos - 1] = 0;
 					listBattleship[i]->health = listBattleship[i]->health - 1;
+					totalHealth -= 1;
 					if (listBattleship[i]->health <= 0) {
-						return "1You sunk your opponent's battleship!";
+						return "1 You sunk your opponent's battleship!";
 					} else {
-						return "1You hit one of your opponent's ships!";
+						return "1 You hit one of your opponent's ships!";
 					}
 				}
 			}
-		} else {
-			return "0You missed!";
 		}
 	}
+	return "0 You missed!";
 }
 
 char *hitSubmarine(int xPos, int yPos) {
 	int i;
-	for (i = 0; i < 3; i++) {
-		if ((listSubmarine[i] != NULL) && (listSubmarine[i]->health > 0)) {
+	for (i = 0; i < numSubmarine; i++) {
+		if (listSubmarine[i]->health > 0) {
 			int j;
 			for (j = 0; j < 3; j++) {
-				if (listSubmarine[i]->x[j] == xPos - 1 && listSubmarine[i]->y[j] == yPos - 1) {
+				if (listSubmarine[i]->x[j] == xPos && listSubmarine[i]->y[j] == yPos) {
 					map[xPos - 1][yPos - 1] = 0;
 					listSubmarine[i]->health = listSubmarine[i]->health - 1;
+					totalHealth -= 1;
 					if (listSubmarine[i]->health <= 0) {
-						return "1You sunk your opponent's submarine!";
+						return "1 You sunk your opponent's submarine!";
 					} else {
-						return "1You hit one of your opponent's ships!";
+						return "1 You hit one of your opponent's ships!";
 					}
 				}
 			}
-		} else {
-			return "0You missed!";
 		}
 	}
+	return "0 You missed!";
 }
 
 char *hitCruiser(int xPos, int yPos) {
 	int i;
-	for (i = 0; i < 3; i++) {
-		if ((listCruiser[i] != NULL) && (listCruiser[i]->health > 0)) {
+	for (i = 0; i < numCruiser; i++) {
+		if (listCruiser[i]->health > 0) {
 			int j;
 			for (j = 0; j < 3; j++) {
-				if (listCruiser[i]->x[j] == xPos - 1 && listCruiser[i]->y[j] == yPos - 1) {
+				if (listCruiser[i]->x[j] == xPos && listCruiser[i]->y[j] == yPos) {
 					map[xPos - 1][yPos - 1] = 0;
 					listCruiser[i]->health = listCruiser[i]->health - 1;
+					totalHealth -= 1;
 					if (listCruiser[i]->health <= 0) {
-						return "1You sunk your opponent's cruiser!";
+						return "1 You sunk your opponent's cruiser!";
 					} else {
-						return "1You hit one of your opponent's ships!";
+						return "1 You hit one of your opponent's ships!";
 					}
 				}
 			}
-		} else {
-			return "0You missed!";
 		}
 	}
+	return "0 You missed!";
 }
 
 char *hitDestroyer(int xPos, int yPos) {
 	int i;
-	for (i = 0; i < 4; i++) {
-		if ((listDestroyer[i] != NULL) && (listDestroyer[i]->health > 0)) {
+	for (i = 0; i < numDestroyer; i++) {
+		if (listDestroyer[i]->health > 0) {
 			int j;
 			for (j = 0; j < 2; j++) {
-				if (listDestroyer[i]->x[j] == xPos - 1 && listDestroyer[i]->y[j] == yPos - 1) {
+				if (listDestroyer[i]->x[j] == xPos && listDestroyer[i]->y[j] == yPos) {
 					map[xPos - 1][yPos - 1] = 0;
 					listDestroyer[i]->health = listDestroyer[i]->health - 1;
+					totalHealth -= 1;
 					if (listDestroyer[i]->health <= 0) {
-						return "1You sunk your opponent's destroyer!";
+						return "1 You sunk your opponent's destroyer!";
 					} else {
-						return "1You hit one of your opponent's ships!";
+						return "1 You hit one of your opponent's ships!";
 					}
 				}
 			}
-		} else {
-			return "0You missed!";
 		}
 	}
+	return "0 You missed!";
 }
 
 // Checks to see if a ship has been 
 char *hitShip(int x, int y) {
 	char *message;
 	message = hitAircraftCarrier(x, y);
-	if (strcmp(message, "0You missed!") != 0) {
+	if (strcmp(message, "0 You missed!") != 0) {
 		return message;
 	}
 	message = hitBattleship(x, y);
-	if (strcmp(message, "0You missed!") != 0) {
+	if (strcmp(message, "0 You missed!") != 0) {
 		return message;
 	}
 	message = hitSubmarine(x, y);
-	if (strcmp(message, "0You missed!") != 0) {
+	if (strcmp(message, "0 You missed!") != 0) {
 		return message;
 	}
 	message = hitCruiser(x, y);
-	if (strcmp(message, "0You missed!") != 0) {
+	if (strcmp(message, "0 You missed!") != 0) {
 		return message;
 	}
 	message = hitDestroyer(x, y);
-	if (strcmp(message, "0You missed!") != 0) {
+	if (strcmp(message, "0 You missed!") != 0) {
 		return message;
 	}
 	return message;
@@ -746,7 +747,9 @@ void attackTurn(){
 		
 		// read response from opponent
 		bzero(buffer, sizeof(buffer));
-		n = read(sockfd, buffer, sizeof(buffer));
+		printf("gets before reading");
+		fflush(stdout);
+		n = read(newsockfd, buffer, sizeof(buffer));
 		if (n < 0) {
 			fprintf(stderr, "ERROR: could not read from socket\n");
 			exit(2);
@@ -754,12 +757,12 @@ void attackTurn(){
 		else {
 			int code;
 			char* token;
-			
-			token = strtok(buffer, ' ');
+			printf("gets before string tok");
+			token = strtok(buffer, " ");
 			code = atoi(token);
 			while (token != NULL){
 				printf("%s ", token);
-				token = strtok(NULL, '.');
+				token = strtok(NULL, ".");
 			}
 			printf("\n");
 			
@@ -784,14 +787,14 @@ void defendTurn(){
 		
 		// read input from opponent
 		bzero(buffer, sizeof(buffer));
-		int n = read(sockfd, buffer, sizeof(buffer));
+		int n = read(newsockfd, buffer, sizeof(buffer));
 		if (n < 0) {
 			fprintf(stderr, "ERROR: could not read from socket\n");
 			exit(2);
 		}
 		else {
-			int numPos = atoi(strtok(buffer, ' '));
-			int charPosToNum = atoi(stroken(NULL, ' '));
+			int numPos = atoi(strtok(buffer, " "));
+			int charPosToNum = atoi(strtok(NULL, " "));
 			
 			// determine if the opponent hit your ship
 			char* message = hitShip(numPos, charPosToNum);
