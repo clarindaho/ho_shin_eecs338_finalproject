@@ -1,34 +1,191 @@
-jashin@jashin:~/ho_shin_eecs338_finalproject$ ./battleship_server 5000
-How large do you want the board to be? (Min: 7x7, Max: 20x20)
-Format: number
-15
-How many aircraft carriers do you want? (Max: 2)
-2
-How many battleships do you want? (Max: 3)
-3
-How many submarines do you want? (Max: 3)
-3
-How many cruisers do you want? (Max: 3)
-3
-How many destroyers do you want? (Max: 4)
-3
-Where do you want to put Aircraft Carrier 0?
-Format: Num Char Direction (North, East, South, West)
-Example: 4 A South
-4 A South
-Where do you want to put Aircraft Carrier 1?
-Format: Num Char Direction (North, East, South, West)
-Example: 4 A South
-6 A South
-ERROR: position is not valid
-Where do you want to put Aircraft Carrier 1?
-Format: Num Char Direction (North, East, South, West)
-Example: 4 A South
-10 A South
-Where do you want to put Battleship 0?
-Format: Num Char Direction (North, East, South, West)
-Example: 4 A South
-3 G East
-Where do you want to put Battleship 1?
-Format: Num Char Direction (North, East, South, West)
-Example: 4 A South
+jashin@jashin:~/ho_shin_eecs338_finalproject$ ./battleship_client 127.0.0.1 50001
+Waiting for opponent to configure the game...
+Waiting for opponent to position their ships...
+Your Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ _ _ _ _ _ 
+3  _ _ _ _ _ _ _ 
+4  _ _ _ _ _ _ _ 
+5  _ _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+Where do you want to put Destroyer 0? 
+Format: Num Char Direction (North, East, South, West) 
+Example: 4 A South 
+2 C East
+Your Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ B B _ _ _ 
+3  _ _ _ _ _ _ _ 
+4  _ _ _ _ _ _ _ 
+5  _ _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+Where do you want to put Destroyer 1? 
+Format: Num Char Direction (North, East, South, West) 
+Example: 4 A South 
+3 G South
+Your Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ B B _ _ _ 
+3  _ _ _ _ _ _ B 
+4  _ _ _ _ _ _ B 
+5  _ _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+Waiting for opponent move...
+Destroyer number 0 got hit!
+Your Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ X B _ _ _ 
+3  _ _ _ _ _ _ B 
+4  _ _ _ _ _ _ B 
+5  _ _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+Enemy Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ _ _ _ _ _ 
+3  _ _ _ _ _ _ _ 
+4  _ _ _ _ _ _ _ 
+5  _ _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+What position do you want to hit? 
+Format: Num Char 
+Example: 4 A 
+3 A
+You missed!
+ 
+Enemy Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ _ _ _ _ _ 
+3    _ _ _ _ _ _ 
+4  _ _ _ _ _ _ _ 
+5  _ _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+Waiting for opponent move...
+Destroyer number 0 got hit!
+Destroyer number 0 was sunk!
+Your Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ X X _ _ _ 
+3  _ _ _ _ _ _ B 
+4  _ _ _ _ _ _ B 
+5  _ _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+Enemy Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ _ _ _ _ _ 
+3    _ _ _ _ _ _ 
+4  _ _ _ _ _ _ _ 
+5  _ _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+What position do you want to hit? 
+Format: Num Char 
+Example: 4 A 
+4 A
+You hit one of your opponent's ships!
+ 
+Enemy Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ _ _ _ _ _ 
+3    _ _ _ _ _ _ 
+4  X _ _ _ _ _ _ 
+5  _ _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+Waiting for opponent move...
+Destroyer number 1 got hit!
+Your Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ X X _ _ _ 
+3  _ _ _ _ _ _ X 
+4  _ _ _ _ _ _ B 
+5  _ _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+Enemy Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ _ _ _ _ _ 
+3    _ _ _ _ _ _ 
+4  X _ _ _ _ _ _ 
+5  _ _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+What position do you want to hit? 
+Format: Num Char 
+Example: 4 A 
+5 A
+You sunk your opponent's destroyer!
+ 
+Enemy Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ _ _ _ _ _ 
+3    _ _ _ _ _ _ 
+4  X _ _ _ _ _ _ 
+5  X _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+Waiting for opponent move...
+Your Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ X X _ _   
+3  _ _ _ _ _ _ X 
+4  _ _ _ _ _ _ B 
+5  _ _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+Enemy Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ _ _ _ _ _ 
+3    _ _ _ _ _ _ 
+4  X _ _ _ _ _ _ 
+5  X _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+What position do you want to hit? 
+Format: Num Char 
+Example: 4 A 
+5 D
+You hit one of your opponent's ships!
+ 
+Enemy Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ _ _ _ _ _ 
+3    _ _ _ _ _ _ 
+4  X _ _ _ _ _ _ 
+5  X _ _ X _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+Waiting for opponent move...
+Destroyer number 1 got hit!
+Destroyer number 1 was sunk!
+Your Board: 
+   A B C D E F G 
+1  _ _ _ _ _ _ _ 
+2  _ _ X X _ _   
+3  _ _ _ _ _ _ X 
+4  _ _ _ _ _ _ X 
+5  _ _ _ _ _ _ _ 
+6  _ _ _ _ _ _ _ 
+7  _ _ _ _ _ _ _ 
+All of your ships are destroyed! You Lose!
