@@ -563,7 +563,11 @@ char *hitAircraftCarrier(int xPos, int yPos) {
 					map[xPos - 1][yPos - 1] = 2;
 					listAircraftCarrier[i]->health = listAircraftCarrier[i]->health - 1;
 					totalHealth -= 1;
+					printf("Aircraft carrier number %d got hit!\n", i);
+					fflush(stdout);			
 					if (listAircraftCarrier[i]->health <= 0) {
+						printf("Aircraft carrier number %d was sunk!\n", i);
+						fflush(stdout);
 						return "1 You sunk your opponent's aircraft carrier!";
 					} else {
 						return "1 You hit one of your opponent's ships!";
@@ -585,7 +589,11 @@ char *hitBattleship(int xPos, int yPos) {
 					map[xPos - 1][yPos - 1] = 2;
 					listBattleship[i]->health = listBattleship[i]->health - 1;
 					totalHealth -= 1;
+					printf("Battleship number %d got hit!\n", i);
+					fflush(stdout);
 					if (listBattleship[i]->health <= 0) {
+						printf("Battleship number %d was sunk!\n", i);
+						fflush(stdout);
 						return "1 You sunk your opponent's battleship!";
 					} else {
 						return "1 You hit one of your opponent's ships!";
@@ -607,7 +615,11 @@ char *hitSubmarine(int xPos, int yPos) {
 					map[xPos - 1][yPos - 1] = 2;
 					listSubmarine[i]->health = listSubmarine[i]->health - 1;
 					totalHealth -= 1;
+					printf("Submarine number %d got hit!\n", i);
+					fflush(stdout);
 					if (listSubmarine[i]->health <= 0) {
+						printf("Submarine number %d was sunk!\n", i);
+						fflush(stdout);
 						return "1 You sunk your opponent's submarine!";
 					} else {
 						return "1 You hit one of your opponent's ships!";
@@ -629,7 +641,11 @@ char *hitCruiser(int xPos, int yPos) {
 					map[xPos - 1][yPos - 1] = 2;
 					listCruiser[i]->health = listCruiser[i]->health - 1;
 					totalHealth -= 1;
+					printf("Cruiser number %d got hit!\n", i);
+					fflush(stdout);
 					if (listCruiser[i]->health <= 0) {
+						printf("Cruiser number %d was sunk!\n", i);
+						fflush(stdout);
 						return "1 You sunk your opponent's cruiser!";
 					} else {
 						return "1 You hit one of your opponent's ships!";
@@ -651,7 +667,11 @@ char *hitDestroyer(int xPos, int yPos) {
 					map[xPos - 1][yPos - 1] = 2;
 					listDestroyer[i]->health = listDestroyer[i]->health - 1;
 					totalHealth -= 1;
+					printf("Destroyer number %d got hit!\n", i);
+					fflush(stdout);
 					if (listDestroyer[i]->health <= 0) {
+						printf("Destroyer number %d was sunk!\n", i);
+						fflush(stdout);
 						return "1 You sunk your opponent's destroyer!";
 					} else {
 						return "1 You hit one of your opponent's ships!";
@@ -849,6 +869,10 @@ void defendTurn(){
 			
 			// determine if the opponent hit your ship
 			char* message = hitShip(numPos, charPosToNum);
+
+			if (strcmp(message, "0 You missed!") == 0){
+				map[numPos - 1][charPosToNum - 1] = 3;
+			}
 			
 			printBoard();
 
