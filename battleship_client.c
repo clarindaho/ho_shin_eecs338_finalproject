@@ -154,9 +154,13 @@ void closeSockets() {
 
 // set up board based on information from server
 void setupFromServer() {
+	printf("Waiting for opponent to configure the game...\n");
+	fflush(stdout);
+	
 	int setupState = 0;
 	while (setupState < 6){
 		bzero(buffer, sizeof(buffer));
+		
 		int n = read(sockfd, buffer, sizeof(buffer));
 		if (n < 0) {
 			fprintf(stderr, "ERROR: could not read from socket\n");
@@ -190,6 +194,8 @@ void setupFromServer() {
 			}
 			
 			setupState++;
+			if (setupState == 6 && numAircraftCarrier + numBattleship + numSubmarine + numCruiser + numDestroyer == 0)
+				setupState = 1;
 		}
 	}
 }

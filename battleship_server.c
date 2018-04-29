@@ -173,7 +173,7 @@ void closeSockets(){
 
 // configure game
 void configureGame(){
-	char temp[100];
+	char input[100];
 	char exitString[100] = "exit";
 	
 	int n;
@@ -182,12 +182,12 @@ void configureGame(){
 	int isBoardSizeSet = 1;
 	while (isBoardSizeSet != 0){
 		printf("How large do you want the board to be? (Min: 7x7, Max: 20x20) \nFormat: number \n");
-		gets(temp);
+		gets(input);
 		
-		if (strcmp(temp, exitString) == 0)
+		if (strcmp(input, exitString) == 0)
 			exit(0);
 		else
-			mapExtent = atoi(temp);
+			mapExtent = atoi(input);
 		
 		if (mapExtent < 7)
 			fprintf(stderr, "ERROR: board extent is too small\n");
@@ -208,145 +208,148 @@ void configureGame(){
 	
 	usleep(500);
 	
-	// configure aircraft carrier
-	int isAircraftCarrierSet = 1;
-	while(isAircraftCarrierSet != 0){
-		printf("How many aircraft carriers do you want? (Max: 2) \n");
-		gets(temp);
+	while (numAircraftCarrier + numBattleship + numSubmarine + numCruiser + numDestroyer == 0) {
+	
+		// configure aircraft carrier
+		int isAircraftCarrierSet = 1;
+		while(isAircraftCarrierSet != 0){
+			printf("How many aircraft carriers do you want? (Max: 2) \n");
+			gets(input);
+			
+			if (strcmp(input, exitString) == 0)
+				exit(0);
+			else
+				numAircraftCarrier = atoi(input);
+				totalHealth += (numAircraftCarrier * 5);
+			if (numAircraftCarrier > 2 || numAircraftCarrier < 0)
+				fprintf(stderr, "ERROR: not a valid option\n");
+			else
+				isAircraftCarrierSet = 0;
+		}
 		
-		if (strcmp(temp, exitString) == 0)
-			exit(0);
-		else
-			numAircraftCarrier = atoi(temp);
-			totalHealth += (numAircraftCarrier * 5);
-		if (numAircraftCarrier > 2 || numAircraftCarrier < 0)
-			fprintf(stderr, "ERROR: not a valid option\n");
-		else
-			isAircraftCarrierSet = 0;
-	}
-	
-	bzero(buffer, sizeof(buffer));
-	sprintf(buffer, "%d\n", numAircraftCarrier);
-	
-	n = write(newsockfd, buffer, sizeof(buffer));
-	if (n < 0) {
-		fprintf(stderr, "ERROR: could not write to socket\n");
-		exit(2);
-	}
-	
-	usleep(500);
-	
-	// configure battleship
-	int isBattleshipSet = 1;
-	while(isBattleshipSet != 0){
-		printf("How many battleships do you want? (Max: 3) \n");
-		gets(temp);
+		bzero(buffer, sizeof(buffer));
+		sprintf(buffer, "%d\n", numAircraftCarrier);
 		
-		if (strcmp(temp, exitString) == 0)
-			exit(0);
-		else
-			numBattleship = atoi(temp);
-			totalHealth = (numBattleship * 4);
-		if (numBattleship > 3 || numBattleship < 0)
-			fprintf(stderr, "ERROR: not a valid option\n");
-		else
-			isBattleshipSet = 0;
-	}
-	
-	bzero(buffer, sizeof(buffer));
-	sprintf(buffer, "%d\n", numBattleship);
-	
-	n = write(newsockfd, buffer, sizeof(buffer));
-	if (n < 0) {
-		fprintf(stderr, "ERROR: could not write to socket\n");
-		exit(2);
-	}
-	
-	usleep(500);
-	
-	// configure submarine
-	int isSubmarineSet = 1;
-	while(isSubmarineSet != 0){
-		printf("How many submarines do you want? (Max: 3) \n");
-		gets(temp);
+		n = write(newsockfd, buffer, sizeof(buffer));
+		if (n < 0) {
+			fprintf(stderr, "ERROR: could not write to socket\n");
+			exit(2);
+		}
 		
-		if (strcmp(temp, exitString) == 0)
-			exit(0);
-		else
-			numSubmarine = atoi(temp);
-			totalHealth = (numBattleship * 3);
-		if (numSubmarine > 3 || numSubmarine < 0)
-			fprintf(stderr, "ERROR: not a valid option\n");
-		else
-			isSubmarineSet = 0;
-	}
+		usleep(500);
 	
-	bzero(buffer, sizeof(buffer));
-	sprintf(buffer, "%d\n", numSubmarine);
+		// configure battleship
+		int isBattleshipSet = 1;
+		while(isBattleshipSet != 0){
+			printf("How many battleships do you want? (Max: 3) \n");
+			gets(input);
+			
+			if (strcmp(input, exitString) == 0)
+				exit(0);
+			else
+				numBattleship = atoi(input);
+				totalHealth = (numBattleship * 4);
+			if (numBattleship > 3 || numBattleship < 0)
+				fprintf(stderr, "ERROR: not a valid option\n");
+			else
+				isBattleshipSet = 0;
+		}
 	
-	n = write(newsockfd, buffer, sizeof(buffer));
-	if (n < 0) {
-		fprintf(stderr, "ERROR: could not write to socket\n");
-		exit(2);
-	}
-	
-	usleep(500);
-	
-	// configure cruiser
-	int isCruiserSet = 1;
-	while(isCruiserSet != 0){
-		printf("How many cruisers do you want? (Max: 3) \n");
-		gets(temp);
+		bzero(buffer, sizeof(buffer));
+		sprintf(buffer, "%d\n", numBattleship);
 		
-		if (strcmp(temp, exitString) == 0)
-			exit(0);
-		else
-			numCruiser = atoi(temp);
-			totalHealth = (numBattleship * 3);
-		if (numCruiser > 3 || numCruiser < 0)
-			fprintf(stderr, "ERROR: not a valid option\n");
-		else
-			isCruiserSet = 0;
-	}
-	
-	bzero(buffer, sizeof(buffer));
-	sprintf(buffer, "%d\n", numCruiser);
-	
-	n = write(newsockfd, buffer, sizeof(buffer));
-	if (n < 0) {
-		fprintf(stderr, "ERROR: could not write to socket\n");
-		exit(2);
-	}
-	
-	usleep(500);
-	
-	// configure destroyer
-	int isDestroyerSet = 1;
-	while(isDestroyerSet != 0){
-		printf("How many destroyers do you want? (Max: 4) \n");
-		gets(temp);
+		n = write(newsockfd, buffer, sizeof(buffer));
+		if (n < 0) {
+			fprintf(stderr, "ERROR: could not write to socket\n");
+			exit(2);
+		}
 		
-		if (strcmp(temp, exitString) == 0)
-			exit(0);
-		else
-			numDestroyer = atoi(temp);
-			totalHealth = (numBattleship * 2);
-		if (numDestroyer > 4 || numDestroyer < 0)
-			fprintf(stderr, "ERROR: not a valid option\n");
-		else
-			isDestroyerSet = 0;
+		usleep(500);
+	
+		// configure submarine
+		int isSubmarineSet = 1;
+		while(isSubmarineSet != 0){
+			printf("How many submarines do you want? (Max: 3) \n");
+			gets(input);
+			
+			if (strcmp(input, exitString) == 0)
+				exit(0);
+			else
+				numSubmarine = atoi(input);
+				totalHealth = (numBattleship * 3);
+			if (numSubmarine > 3 || numSubmarine < 0)
+				fprintf(stderr, "ERROR: not a valid option\n");
+			else
+				isSubmarineSet = 0;
+		}
+		
+		bzero(buffer, sizeof(buffer));
+		sprintf(buffer, "%d\n", numSubmarine);
+		
+		n = write(newsockfd, buffer, sizeof(buffer));
+		if (n < 0) {
+			fprintf(stderr, "ERROR: could not write to socket\n");
+			exit(2);
+		}
+		
+		usleep(500);
+		
+		// configure cruiser
+		int isCruiserSet = 1;
+		while(isCruiserSet != 0){
+			printf("How many cruisers do you want? (Max: 3) \n");
+			gets(input);
+			
+			if (strcmp(input, exitString) == 0)
+				exit(0);
+			else
+				numCruiser = atoi(input);
+				totalHealth = (numBattleship * 3);
+			if (numCruiser > 3 || numCruiser < 0)
+				fprintf(stderr, "ERROR: not a valid option\n");
+			else
+				isCruiserSet = 0;
+		}
+		
+		bzero(buffer, sizeof(buffer));
+		sprintf(buffer, "%d\n", numCruiser);
+		
+		n = write(newsockfd, buffer, sizeof(buffer));
+		if (n < 0) {
+			fprintf(stderr, "ERROR: could not write to socket\n");
+			exit(2);
+		}
+		
+		usleep(500);
+		
+		// configure destroyer
+		int isDestroyerSet = 1;
+		while(isDestroyerSet != 0){
+			printf("How many destroyers do you want? (Max: 4) \n");
+			gets(input);
+			
+			if (strcmp(input, exitString) == 0)
+				exit(0);
+			else
+				numDestroyer = atoi(input);
+				totalHealth = (numBattleship * 2);
+			if (numDestroyer > 4 || numDestroyer < 0)
+				fprintf(stderr, "ERROR: not a valid option\n");
+			else
+				isDestroyerSet = 0;
+		}
+		
+		bzero(buffer, sizeof(buffer));
+		sprintf(buffer, "%d\n", numDestroyer);
+		
+		n = write(newsockfd, buffer, sizeof(buffer));
+		if (n < 0) {
+			fprintf(stderr, "ERROR: could not write to socket\n");
+			exit(2);
+		}
+		
+		usleep(500);
 	}
-	
-	bzero(buffer, sizeof(buffer));
-	sprintf(buffer, "%d\n", numDestroyer);
-	
-	n = write(newsockfd, buffer, sizeof(buffer));
-	if (n < 0) {
-		fprintf(stderr, "ERROR: could not write to socket\n");
-		exit(2);
-	}
-	
-	usleep(500);
 }
 
 // Checks to see whether or not ship can be placed at this position
