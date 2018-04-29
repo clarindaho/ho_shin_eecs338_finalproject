@@ -98,6 +98,8 @@ char *hitSubmarine();
 char *hitCruiser();
 char *hitDestroyer();
 
+char *isGameOver();
+
 //
 // method definitions
 //
@@ -667,6 +669,16 @@ char *hitShip(int x, int y) {
 	return message;
 }
 
+// Checks to see if the game is over
+char *isGameOver() {
+	if (totalHealth <= 0) {
+		gameOver = 0;
+		return "2 You sunk all of your opponent's ships! You Win!"
+	} else {
+		return "Not over";
+	}
+}
+
 // Prints out the current status of the enemy board
 void printEnemyBoard() {
 	printf("Enemy Board: \n");
@@ -802,11 +814,18 @@ void defendTurn(){
 			char* message = hitShip(numPos, charPosToNum);
 			
 			printBoard();
-			
-			// send response to opponent
+
+			// check if you lost
+			char* checkGameOver = isGameOver();
 			bzero(buffer, sizeof(buffer));
-			sprintf(buffer, "%s\n", message);
-		
+			if (gameOver == 1) {
+				sprintf(buffer, "%s\n", message);
+			} else {
+				sprintf(buffer, "%s\n", checkGameOver);
+				printf("All of your ships are destroyed! You Lose!");
+				fflush(stdout);
+			}
+
 			n = write(newsockfd, buffer, sizeof(buffer));
 			if (n < 0) {
 				fprintf(stderr, "ERROR: could not write to socket\n");
