@@ -692,8 +692,10 @@ void printEnemyBoard() {
 					break;
 				case 2:
 					printf("X ");
+					break;
 				case 3:
 					printf("  ");
+					break;
 			}
 		}
 		printf("\n");
